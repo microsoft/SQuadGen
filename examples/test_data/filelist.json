@@ -1,0 +1,20 @@
+[
+    "examples/test_data/3_holes.ply",
+    "examples/test_data/00001893_7dff003bccb549eca063340e_trimesh_019_0.ply",
+    "examples/test_data/00004973_d6f9da33017048c683ac514f_trimesh_037_0.ply",
+    "examples/test_data/00025357_7e232029b04a4683bc1a77fb_trimesh_000_6.ply",
+    "examples/test_data/00027385_092062efac5a450f90d4a7dd_trimesh_011_0.ply",
+    "examples/test_data/00036644_772ddb8b0ea447ceb0f2b9bc_trimesh_002_0.ply",
+    "examples/test_data/00088291_9d7de544f991fff966b540ff_trimesh_007_0.ply",
+    "examples/test_data/00091260_ca06993708472fe223b477ed_trimesh_001_1.ply",
+    "examples/test_data/00098615_56d3ec39e4b0747e94b812ee_trimesh_009_0.ply",
+    "examples/test_data/00099581_56d55bbfe4b03dca1b449a56_trimesh_046_0.ply",
+    "examples/test_data/5d7fad1dcdc84ce6aa37152cbba657f1_0_20.npz.ply",
+    "examples/test_data/anti_backlash_nut.ply",
+    "examples/test_data/blockLP.ply",
+    "examples/test_data/dancing_children.ply",
+    "examples/test_data/dragon0.ply",
+    "examples/test_data/fandisk.ply",
+    "examples/test_data/fertility.ply",
+    "examples/test_data/trim_star_14k.ply"
+]

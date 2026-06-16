@@ -216,3 +216,20 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# SQuadGen outputs and checkpoints
+outputs/
+results/
+results2/
+checkpoints/
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+wandb/
+
+# Editor and OS files
+.vscode/
+.DS_Store
+
+exported_ckpts/

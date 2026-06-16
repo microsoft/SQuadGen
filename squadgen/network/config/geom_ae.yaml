@@ -1,0 +1,23 @@
+model:
+  params:
+    latent_vae_params:
+      in_keys_list: ["dcdf"]
+      out_keys_list: ["dcdf"]
+      out_weights_list: [0]
+      dim: 512
+      num_latents: 512
+      latent_dim: 32
+      attn_depth: 24
+      loss_params:
+        kl_weight: 0.001
+
+    cond_vae_params:
+      in_keys_list: ["normal"]
+      out_keys_list: ["udf_near"]
+      out_weights_list: [1]
+      dim: 512
+      num_latents: 1024
+      latent_dim: 64
+      attn_depth: 24
+      loss_params:
+        kl_weight: 0.0

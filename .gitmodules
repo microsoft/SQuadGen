@@ -1,0 +1,6 @@
+[submodule "DualMesh-UDF"]
+	path = DualMesh-UDF
+	url = https://github.com/cong-yi/DualMesh-UDF
+[submodule "QuadTools"]
+	path = QuadTools
+	url = https://github.com/xueyuhanlang/QuadTools4SquadGen.git

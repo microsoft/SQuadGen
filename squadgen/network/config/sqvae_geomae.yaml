@@ -1,0 +1,28 @@
+model:
+  params:
+    latent_vae_params:
+      in_keys_list: ["dcdf", "gdcdf", "cdf", "gcdf", "normal", "offset", "offset1", "offset2", "offset3", "offsetb", "offsetc", "offsetd"]
+      out_keys_list: ["dcdf", "cdf", "offset", "offset1", "offset2", "offset3", "offsetb", "offsetc", "offsetd"]
+      out_weights_list: [1, 1, 1, 1, 1, 1, 1, 1, 1]
+      dim: 512
+      num_latents: 1024
+      latent_dim: 32
+      attn_depth: 24
+      loss_params:
+        kl_weight: 0.001
+      is_learnable_latents: 0
+      is_context_norm: 0
+      use_geom_code_as_fps: 1
+      use_geom_code_and_pe_as_fps: 1
+      gcolor_grad_norm_in: 1
+
+    cond_vae_params:
+      in_keys_list: ["normal"]
+      out_keys_list: ["udf"]
+      out_weights_list: [1]
+      dim: 512
+      num_latents: 1024
+      latent_dim: 64
+      attn_depth: 24
+      loss_params:
+        kl_weight: 0.0
