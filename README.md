@@ -3,10 +3,11 @@
 <h1>SQuadGen: Generating Simple Quad Layouts via Chart Distance Fields</h1>
 
 <p>
-  <a href="https://arxiv.org/abs/2604.27329"><img src="https://img.shields.io/badge/Paper-arXiv%3A2604.27329-b31b1b.svg" alt="Paper"></a>
-  <a href="https://youkang-kong.github.io/squadgen/"><img src="https://img.shields.io/badge/Project-Page-blue.svg" alt="Project Page"></a>
-  <a href="https://huggingface.co/microsoft/SQuadGen"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-yellow" alt="Hugging Face"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
+<a href="https://youkang-kong.github.io/squadgen/"><img src="https://img.shields.io/badge/Project-Website-blue" alt="Project Page"></a>
+<a href="https://arxiv.org/abs/2604.27329"><img src="https://img.shields.io/badge/Paper-2604.27329-red" alt="Paper"></a>
+<a href="https://github.com/microsoft/SQuadGen"><img src="https://img.shields.io/badge/Github-181717?logo=github&logoColor=white" alt="github code"></a>
+<a href="https://huggingface.co/microsoft/SQuadGen"><img src="https://img.shields.io/badge/Hugging%20Face-Model-yellow" alt="Hugging Face"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
 </p>
 
 <p>
@@ -14,7 +15,7 @@
   <a href="https://xueyuhanlang.github.io/">Yang Liu</a><sup>2</sup>,
   <a href="https://yuedong.shading.me/">Yue Dong</a><sup>2</sup>,
   <a href="https://scholar.google.com/citations?user=P91a-UQAAAAJ">Xin Tong</a><sup>2</sup>,
-  <a href="https://scholar.google.com/citations?user=9akH-n8AAAAJ&hl=en">Heung-Yeung Shum</a><sup>1</sup>
+  <a href="https://scholar.google.com/citations?user=9akH-n8AAAAJ&hl=en">Heung-Yeung Shum</a><sup>2</sup>
 </p>
 
 <p><sup>1</sup>Tsinghua University    <sup>2</sup>Microsoft Research Asia</p>
@@ -27,7 +28,7 @@
 
 **SQuadGen** is a diffusion-based generative framework for synthesizing simple quad layouts on 3D shapes. It introduces **Chart Distance Fields (CDF)**, a continuous surface-based representation that makes quad layout generation amenable to neural learning while preserving structure useful for downstream modeling and editing.
 
-This release covers the main SQuadGen workflow: CDF data preparation, Geometry AE and SQVAE reconstruction, SQDiffuse inference and training, and loop simplicity evaluation.
+This release covers the main SQuadGen workflow: CDF data preparation, Geom-AE and SQ-VAE reconstruction, SQ-Diffuse inference and training, and loop simplicity evaluation.
 
 ## ✨ Highlights
 
@@ -41,11 +42,11 @@ Loop-aware scores evaluate whether face-loops and edge-loops stay simple, making
 
 ### 3. Generative Topology Prior
 
-The model learns topology patterns from artist-authored and recovered quad layouts, capturing human priors for where clean loops and charts should appear.
+The model learns topology patterns from artist-authored and recovered quad layouts, capturing human priors for where clean loops and charts should appear. See [data preparation](data_tools/README.md) and the [paper](https://arxiv.org/abs/2604.27329) for details.
 
 ### 4. Loop-Aware Data Curation
 
-A recovery pipeline and simplicity metrics curate 230k high-quality quad layouts, filtering for editability instead of only geometric reconstruction accuracy.
+A recovery pipeline and simplicity metrics curate 230k high-quality quad layouts, filtering for editability instead of only geometric reconstruction accuracy. The curation process and dataset scope are described in [data preparation](data_tools/README.md) and the [paper](https://arxiv.org/abs/2604.27329).
 
 ## 🛠️ Installation
 
@@ -60,7 +61,7 @@ A recovery pipeline and simplicity metrics curate 230k high-quality quad layouts
 1. Clone the repo with submodules:
 
 ```sh
-git clone --recurse-submodules <repo-url> SQuadGen
+git clone --recurse-submodules https://github.com/microsoft/SQuadGen.git SQuadGen
 cd SQuadGen
 ```
 
@@ -101,7 +102,7 @@ See [DualMesh-UDF/README.md](DualMesh-UDF/README.md) for details.
 cd QuadTools
 mkdir -p build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
-cmake --build . -j$(nproc)
+cmake --build . -j$(nproc) --config Release
 cd ../..
 ```
 
@@ -111,18 +112,18 @@ See [QuadTools/README.md](QuadTools/README.md) for details.
 
 | Model               | Config                                        | Parameters                  |
 | :------------------ | :-------------------------------------------- | :-------------------------- |
-| SQVAE + Geometry AE | `squadgen/network/config/sqvae_geomae.yaml` | 114.83M + 107.51M = 222.34M |
+| SQ-VAE + Geom-AE | `squadgen/network/config/sqvae_geomae.yaml` | 114.83M + 107.51M = 222.34M |
 | SQDiffuse           | `squadgen/network/config/sqdiffuse.yaml`    | 802.03M                     |
 
-`sqvae_geomae.yaml` contains both SQVAE and Geometry AE. SQDiffuse uses its own checkpoint plus the SQVAE + Geometry AE checkpoint.
+`sqvae_geomae.yaml` contains both SQ-VAE and Geom-AE. SQDiffuse uses its own checkpoint plus the SQ-VAE + Geom-AE checkpoint.
 
 Both checkpoints are hosted on Hugging Face: [microsoft/SQuadGen](https://huggingface.co/microsoft/SQuadGen). Download them into `checkpoints/` with:
 
 ```bash
-hf download microsoft/SQuadGen --local-dir checkpoints --include "ckpts/*.pth"
+hf download microsoft/SQuadGen --local-dir checkpoints --include "ckpts/*.safetensors"
 ```
 
-After the command finishes the files will be available at `checkpoints/ckpts/sqvae_geomae.pth` and `checkpoints/ckpts/sqdiffuse.pth`, matching the paths used in the inference commands below.
+After the command finishes the files will be available at `checkpoints/ckpts/sqvae_geomae.safetensors` and `checkpoints/ckpts/sqdiffuse.safetensors`, matching the paths used in the inference commands below.
 
 ## 🚀 Usage
 
@@ -133,7 +134,7 @@ python reconstruct_geometry_ae.py \
   --input_filelist examples/test_data/filelist.json \
   --results_dir results/reconstruct_geometry_ae \
   --ae_config squadgen/network/config/sqvae_geomae.yaml \
-  --ae_pth checkpoints/ckpts/sqvae_geomae.pth \
+  --ae_pth checkpoints/ckpts/sqvae_geomae.safetensors \
   --name test_4096 \
   --debug 0 \
   --res 4096 \
@@ -150,20 +151,20 @@ Outputs: one folder per input mesh under `results/reconstruct_geometry_ae/test_4
 - `geom_ae_recon_score.json`: reconstruction scores.
 - Debug files such as `fps.ply`, `kv.ply`, and `points_udf.ply` when `--debug 1`.
 
-### SQVAE Inference
+### SQ-VAE Inference
 
 ```bash
 python reconstruct_sqvae.py \
   --input examples/59a7e911d0ed408f89bfd3010564c03e_3.npz \
   --results_dir results/reconstruct_sqvae \
   --ae_config squadgen/network/config/sqvae_geomae.yaml \
-  --ae_pth checkpoints/ckpts/sqvae_geomae.pth \
+  --ae_pth checkpoints/ckpts/sqvae_geomae.safetensors \
   --name test_4096 \
   --res 4096 \
   --is_skip 0
 ```
 
-What it does: reconstructs SQVAE fields from the input `.npz` file.
+What it does: reconstructs SQ-VAE fields from the input `.npz` file.
 
 See [Data Preparation](#data-preparation) for details about the contents of the `.npz` file.
 
@@ -174,16 +175,16 @@ Outputs: one folder per input under `results/reconstruct_sqvae/test_4096/`, cont
 
 Use `--input_filelist /path/to/filelist.json` instead of `--input` for batch reconstruction.
 
-### SQDiffuse Inference
+### SQ-Diffuse Inference
 
 ```bash
 python infer_sqdiffuse.py \
   --input_filelist examples/test_data/filelist.json \
   --results_dir results/infer_sqdiffuse \
   --ae_config squadgen/network/config/sqvae_geomae.yaml \
-  --ae_pth checkpoints/ckpts/sqvae_geomae.pth \
+  --ae_pth checkpoints/ckpts/sqvae_geomae.safetensors \
   --model_config squadgen/network/config/sqdiffuse.yaml \
-  --model_pth checkpoints/ckpts/sqdiffuse.pth \
+  --model_pth checkpoints/ckpts/sqdiffuse.safetensors \
   --name test_8192 \
   --n_gen 1 \
   --debug 0 \
@@ -194,7 +195,7 @@ python infer_sqdiffuse.py \
   --use_latent_smoothing 1
 ```
 
-What it does: samples SQDiffuse layouts for each input triangle mesh, then automatically runs `QuadTools/build/QuadExtraction` and `QuadTools/build/QuadQuality` on every generated sample (skipped if QuadTools is not built).
+What it does: samples SQ-Diffuse layouts for each input triangle mesh, then automatically runs `QuadTools/build/QuadExtraction` and `QuadTools/build/QuadQuality` on every generated sample (skipped if QuadTools is not built).
 
 Outputs: one folder per input mesh under `results/infer_sqdiffuse/test_8192/`, containing:
 
@@ -222,15 +223,15 @@ See [QuadTools/README.md](QuadTools/README.md) for the full list of `QuadExtract
 
 Before training, first prepare a dataset from quad meshes. This step extracts CDF data and saves it as `.npz` files; see [data_tools/README.md](data_tools/README.md) for the detailed data format and preprocessing pipeline.
 
-### SQVAE Training
+### SQ-VAE Training
 
-We provide [train_sqvae.sh](train_sqvae.sh) for SQVAE training. Edit the parameters in the script, then run:
+We provide [train_sqvae.sh](train_sqvae.sh) for SQ-VAE training. Edit the parameters in the script, then run:
 
 ```bash
 sh train_sqvae.sh
 ```
 
-### SQDiffuse Training
+### SQ-Diffuse Training
 
 Similarly, edit the parameters in [train_sqdiffuse.sh](train_sqdiffuse.sh), then run:
 
@@ -257,6 +258,14 @@ Outputs are written under `results/loop_simplicity/`:
 - `<mesh_name>.json`: per-mesh quality report, including `FratioN` and `EratioN` scores.
 - Additional per-mesh visualization files when `-v` is passed.
 
+## Responsible AI and Limitations
+
+SQuadGen is released for research and experimental use. It is not intended for safety-critical, high-risk, real-time, or fully autonomous systems, including production CAD, engineering analysis, manufacturing, or safety-critical simulation, without additional testing, validation, and safeguards.
+
+The models may perform less reliably on geometry that is rare, highly detailed, noisy, non-manifold, topologically complex, or outside the training distribution. Generated layouts are learned approximations and may contain topology failures, invalid geometry, or mesh-extraction artifacts. The models do not guarantee geometric correctness, manufacturability, numerical accuracy, constraint satisfaction, robustness, or consistency across datasets and mesh resolutions.
+
+Users and downstream developers should validate input geometry and generated outputs, use human review for consequential decisions, and perform downstream quality assurance before relying on results. Users are responsible for ensuring that input meshes and training data are legally and ethically sourced and that their use complies with applicable laws, data-protection requirements, and organizational policies. SQuadGen does not process language and is not intended for sensitive decision-making domains such as healthcare, legal services, or finance.
+
 ## 📄 License
 
 This model and code are released under the **[MIT License](LICENSE)**.
@@ -273,11 +282,13 @@ If you use SQuadGen in your research, please cite:
 
 ```bibtex
 @article{kong2026squadgen,
-  title   = {SQuadGen: Generating Simple Quad Layouts via Chart Distance Fields},
-  author  = {Kong, Youkang and Liu, Yang and Dong, Yue and Tong, Xin and Shum, Heung-Yeung},
-  journal = {ACM Trans. Graph. (SIGGRAPH)},
-  volume  = {45},
-  number  = {4},
-  year    = {2026},
+  author    = {Youkang Kong and Yang Liu and Yue Dong and Xin Tong and Heung-Yeung Shum},
+  title     = {{SQuadGen}: Generating Simple Quad Layouts via Chart Distance Fields},
+  journal   = {ACM Transactions on Graphics (SIGGRAPH)},
+  volume    = {45},
+  number    = {4},
+  pages     = {144:1--144:15},
+  year      = {2026},
+  doi       = {10.1145/3811348}
 }
 ```

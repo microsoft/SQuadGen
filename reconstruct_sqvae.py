@@ -155,16 +155,29 @@ def reconstruct_one(args, ae, file_fn, outdir, device):
 
     batch = prepare_color_batch(file_fn, n_fps, device, args)
 
-    time_start = time.time()
+    torch.cuda.synchronize() if torch.cuda.is_available() else None
+    encode_start = time.time()
     with torch.no_grad():
         with torch.cuda.amp.autocast(enabled=args.mix_precision, dtype=torch.bfloat16):
-            ae_out = ae.forward(batch)
+            latent = ae.encode(batch, only_trainable=True)
+    torch.cuda.synchronize() if torch.cuda.is_available() else None
+    encode_time = time.time() - encode_start
+
+    decode_start = time.time()
+    with torch.no_grad():
+        with torch.cuda.amp.autocast(enabled=args.mix_precision, dtype=torch.bfloat16):
+            ae_out = ae.decode(batch, latent, only_trainable=True)
+    torch.cuda.synchronize() if torch.cuda.is_available() else None
+    decode_time = time.time() - decode_start
+
     ae_outputs = unwrap_ae_output(ae_out)
-    print(f"reconstruct sqvae time: {time.time() - time_start:.2f}")
+    print(f"[sqvae] encoding time: {encode_time:.2f}s, decoding time: {decode_time:.2f}s ({file_fn})")
     scores = save_reconstruction_outputs(args, batch, ae_outputs, outdir)
 
     with open(os.path.join(outdir, "sqvae_recon_score.json"), "w") as output_file:
         json.dump(scores, output_file, indent=4)
+
+    return encode_time, decode_time
 
 
 def main():
@@ -190,6 +203,7 @@ def main():
     ae = load_ae(args, device)
     input_list = load_input_list(args)
 
+    enc_times, dec_times = [], []
     for file_fn in input_list:
         ext = os.path.splitext(file_fn)[1]
         outdir = os.path.join(args.results_dir, os.path.basename(file_fn).replace(ext, ""))
@@ -197,9 +211,17 @@ def main():
             print(f"Skip {file_fn}, reconstruction already exists")
             continue
         try:
-            reconstruct_one(args, ae, file_fn, outdir, device)
+            encode_time, decode_time = reconstruct_one(args, ae, file_fn, outdir, device)
+            enc_times.append(encode_time)
+            dec_times.append(decode_time)
         except Exception as err:
             print(f"Error: {err} on file {file_fn}")
+
+    if enc_times:
+        n = len(enc_times)
+        print(f"[sqvae] processed {n} files, "
+              f"avg encoding time: {sum(enc_times) / n:.2f}s, "
+              f"avg decoding time: {sum(dec_times) / n:.2f}s")
 
 
 if __name__ == "__main__":

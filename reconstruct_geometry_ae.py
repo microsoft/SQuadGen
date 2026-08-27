@@ -79,13 +79,16 @@ def reconstruct_one(args, ae, file_fn, outdir, device):
     n_fps = ae.cond_vae.num_latents
     batch = prepare_mesh_batch(file_fn, outdir, n_fps, device, args.debug)
 
-    time_start = time.time()
+    torch.cuda.synchronize() if torch.cuda.is_available() else None
+    infer_start = time.time()
     with torch.no_grad():
         with torch.cuda.amp.autocast(enabled=args.mix_precision, dtype=torch.bfloat16):
             latent_dict = ae.encode(batch, is_mode=args.is_mode, is_run_sqvae=False)
             x_last = ae.cond_vae.return_last_features(latent_dict["lat_cond"])
     x_last = x_last.to(torch.float32)
-    print(f"encode geometry time: {time.time() - time_start:.2f}")
+    torch.cuda.synchronize() if torch.cuda.is_available() else None
+    encode_time = time.time() - infer_start
+    print(f"[geom_ae] encoding time: {encode_time:.2f}s ({file_fn})")
 
     try:
         from DualMeshUDF import write_obj
@@ -115,6 +118,8 @@ def reconstruct_one(args, ae, file_fn, outdir, device):
         pred_color = get_errmap_viz(ans_recon_select, err_min=0.0, err_max=min(threshold, 1.0))
         save_ply(xyz_select, pred_color, outdir, "points_udf.ply", data_type="color4")
 
+    return encode_time
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -139,6 +144,7 @@ def main():
     ae = load_ae(args, device)
     input_list = load_input_list(args)
 
+    e2e_times = []
     for file_fn in input_list:
         ext = os.path.splitext(file_fn)[1]
         outdir = os.path.join(args.results_dir, os.path.basename(file_fn).replace(ext, ""))
@@ -146,9 +152,15 @@ def main():
             print(f"Skip {file_fn}, reconstruction already exists")
             continue
         try:
-            reconstruct_one(args, ae, file_fn, outdir, device)
+            e2e_time = reconstruct_one(args, ae, file_fn, outdir, device)
+            e2e_times.append(e2e_time)
         except Exception as e:
             print(f"Error: {e} on file {file_fn}")
+
+    if e2e_times:
+        print(f"[geom_ae] processed {len(e2e_times)} files, "
+              f"avg encoding time: {sum(e2e_times) / len(e2e_times):.2f}s, "
+              f"total: {sum(e2e_times):.2f}s")
 
 
 if __name__ == "__main__":

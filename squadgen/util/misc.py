@@ -360,7 +360,11 @@ def save_model(args, epoch, model, model_without_ddp, optimizer, loss_scaler, ot
         model.save_checkpoint(save_dir=args.output_dir, tag="checkpoint-%s" % epoch_name, client_state=client_state)
 
 def load_model_from_file(fn):
-    if os.path.isfile(fn):
+    if str(fn).endswith('.safetensors'):
+        from safetensors.torch import load_file
+        print(f"Load checkpoint from {fn}, safetensors mode")
+        checkpoint = {"model": load_file(fn, device='cpu')}
+    elif os.path.isfile(fn):
         print(f"Load checkpoint from {fn}")
         checkpoint = torch.load(fn, map_location='cpu')
     else:

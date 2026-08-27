@@ -409,3 +409,54 @@ def length(x: torch.Tensor, eps: float = 1e-20) -> torch.Tensor:
 
 def safe_normalize(x: torch.Tensor, eps: float = 1e-20) -> torch.Tensor:
     return x / length(x, eps)
+
+
+# ----------------------------------------------------------------------------
+# Checkpoint conversion
+# ----------------------------------------------------------------------------
+
+
+def convert_pth_to_safetensors(pth_path, out_path=None, remove_pth=False):
+    """Convert a .pth checkpoint to .safetensors.
+
+    Loads the checkpoint, extracts the `model` state_dict (or uses the whole
+    dict if there is no `model` key), and writes a flat tensor dict as
+    .safetensors. `epoch` (if present) is preserved in the safetensors metadata
+    header. Non-tensor entries (optimizer/scaler/args) are dropped since
+    safetensors can only hold tensors.
+
+    Args:
+        pth_path: path to the source .pth file.
+        out_path: destination .safetensors path. Defaults to `pth_path` with a
+            `.safetensors` suffix.
+        remove_pth: delete the source .pth after a successful conversion.
+
+    Returns:
+        The path to the written .safetensors file.
+    """
+    from safetensors.torch import save_file
+
+    pth_path = str(pth_path)
+    if out_path is None:
+        out_path = os.path.splitext(pth_path)[0] + ".safetensors"
+    out_path = str(out_path)
+
+    ckpt = torch.load(pth_path, map_location="cpu", weights_only=False)
+    state_dict = ckpt["model"] if isinstance(ckpt, dict) and "model" in ckpt else ckpt
+
+    # safetensors requires contiguous tensors and rejects shared storage.
+    tensors = {k: v.contiguous().clone() for k, v in state_dict.items()}
+
+    metadata = {"format": "pt"}
+    if isinstance(ckpt, dict) and "epoch" in ckpt:
+        metadata["epoch"] = str(ckpt["epoch"])
+
+    out_dir = os.path.dirname(out_path)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+    save_file(tensors, out_path, metadata=metadata)
+
+    if remove_pth and os.path.abspath(out_path) != os.path.abspath(pth_path):
+        os.remove(pth_path)
+
+    return out_path
