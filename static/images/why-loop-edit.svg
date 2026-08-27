@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" role="img" aria-labelledby="title desc">
+  <title id="title">Loop editing on a simple quad layout</title>
+  <desc id="desc">A selected edge loop on a simple quad layout is edited by extrusion while preserving clean surrounding loops.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f7c90"/>
+    </marker>
+    <style>
+      .label { font-family: Arial, Helvetica, sans-serif; font-size: 32px; font-weight: 700; fill: #18202a; }
+      .sub { font-family: Arial, Helvetica, sans-serif; font-size: 20px; fill: #5f6c7b; }
+      .mesh { fill: none; stroke: #314051; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+      .mesh-soft { fill: none; stroke: #7f8b98; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; opacity: 0.9; }
+      .loop { fill: none; stroke: #f25f5c; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+      .face { fill: #eef6f8; stroke: #314051; stroke-width: 3; stroke-linejoin: round; }
+      .extrude { fill: #d7eff4; stroke: #314051; stroke-width: 3; stroke-linejoin: round; }
+      .top { fill: #f8fbfc; stroke: #314051; stroke-width: 3; stroke-linejoin: round; }
+      .panel { fill: #ffffff; stroke: #dfe5eb; stroke-width: 3; rx: 16; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="460" fill="#fbfcfd"/>
+  <text x="300" y="52" text-anchor="middle" class="label">Select a clean loop</text>
+  <text x="300" y="82" text-anchor="middle" class="sub">standard loop selection on a simple quad layout</text>
+  <text x="900" y="52" text-anchor="middle" class="label">Edit the region</text>
+  <text x="900" y="82" text-anchor="middle" class="sub">extrude, deform, or refine without manual cleanup</text>
+
+  <rect x="60" y="108" width="480" height="300" class="panel"/>
+  <rect x="660" y="108" width="480" height="300" class="panel"/>
+
+  <g transform="translate(140 150)">
+    <path class="face" d="M30 48 L330 26 L390 180 L92 210 Z"/>
+    <path class="mesh-soft" d="M80 44 L142 204 M136 40 L198 198 M194 36 L256 192 M252 32 L314 186 M310 28 L372 180"/>
+    <path class="mesh-soft" d="M48 94 L348 72 M66 138 L366 116 M82 182 L382 160"/>
+    <path class="loop" d="M66 138 L366 116"/>
+    <circle cx="66" cy="138" r="8" fill="#f25f5c"/>
+    <circle cx="366" cy="116" r="8" fill="#f25f5c"/>
+  </g>
+
+  <path d="M560 258 C594 258 616 258 642 258" fill="none" stroke="#0f7c90" stroke-width="6" marker-end="url(#arrow)"/>
+
+  <g transform="translate(728 126)">
+    <path class="face" d="M30 84 L324 62 L384 216 L92 244 Z"/>
+    <path class="mesh-soft" d="M80 80 L142 238 M136 76 L198 232 M194 72 L256 226 M252 68 L314 220 M310 64 L372 214"/>
+    <path class="mesh-soft" d="M48 130 L348 108 M82 218 L382 196"/>
+
+    <path class="extrude" d="M66 166 L366 144 L366 86 L66 108 Z"/>
+    <path class="top" d="M66 108 L366 86 L344 38 L88 58 Z"/>
+    <path class="mesh" d="M66 166 L366 144 M66 108 L366 86 M88 58 L344 38 M66 166 L66 108 L88 58 M366 144 L366 86 L344 38"/>
+    <path class="mesh-soft" d="M126 162 L126 104 L140 54 M186 158 L186 100 L194 50 M246 154 L246 96 L248 46 M306 150 L306 91 L300 42"/>
+    <path class="loop" d="M66 108 L366 86"/>
+  </g>
+</svg>

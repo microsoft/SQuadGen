@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>3D Model Gallery</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        .header { padding: 20px; text-align: center; }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            grid-template-rows: repeat(4, 1fr); 
+            gap: 15px; width: 95vw; height: 80vh; 
+        }
+        .card { background: #2a2a2a; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #444; }
+        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
+        .label { font-size: 10px; padding: 5px; text-align: center; color: #aaa; background: #222; }
+        .nav { margin: 20px; display: flex; gap: 20px; align-items: center; }
+        button { padding: 10px 20px; cursor: pointer; background: #444; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #666; }
+        button:disabled { opacity: 0.3; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>Chart Distance Field Explorer</h1><p id="pageInfo"></p></div>
+    <div id="gallery" class="grid"></div>
+    <div class="nav">
+        <button id="prevBtn" onclick="changePage(-1)">&larr; Backward</button>
+        <button id="nextBtn" onclick="changePage(1)">Forward &rarr;</button>
+    </div>
+
+    <script>
+        const allModels = ["18/gen0.glb", "18/gen1.glb", "18/gen2.glb", "18/gen3.glb", "5/gen0.glb", "5/gen1.glb", "5/gen2.glb", "5/gen3.glb", "angel/gen0.glb", "angel/gen1.glb", "angel/gen2.glb", "angel/gen3.glb", "anti_backlash_nut/gen0.glb", "anti_backlash_nut/gen1.glb", "anti_backlash_nut/gen2.glb", "anti_backlash_nut/gen3.glb", "armadillo/gen0.glb", "armadillo/gen1.glb", "armadillo/gen2.glb", "armadillo/gen3.glb", "bunny/gen0.glb", "bunny/gen1.glb", "bunny/gen2.glb", "bunny/gen3.glb", "cad5-tri/gen0.glb", "cad5-tri/gen1.glb", "cad5-tri/gen2.glb", "cad5-tri/gen3.glb", "camel-tri/gen0.glb", "camel-tri/gen1.glb", "camel-tri/gen2.glb", "camel-tri/gen3.glb", "cap_thing/gen0.glb", "cap_thing/gen1.glb", "cap_thing/gen2.glb", "cap_thing/gen3.glb", "chair/gen0.glb", "chair/gen1.glb", "chair/gen2.glb", "chair/gen3.glb", "chinese_lion100K/gen0.glb", "chinese_lion100K/gen1.glb", "chinese_lion100K/gen2.glb", "chinese_lion100K/gen3.glb", "cover_small/gen0.glb", "cover_small/gen1.glb", "cover_small/gen2.glb", "cover_small/gen3.glb", "coverrear_Lp/gen0.glb", "coverrear_Lp/gen1.glb", "coverrear_Lp/gen2.glb", "coverrear_Lp/gen3.glb", "deformed_armadillo/gen0.glb", "deformed_armadillo/gen1.glb", "deformed_armadillo/gen2.glb", "deformed_armadillo/gen3.glb", "elephant/gen0.glb", "elephant/gen1.glb", "elephant/gen2.glb", "elephant/gen3.glb", "fandisk/gen0.glb", "fandisk/gen1.glb", "fandisk/gen2.glb", "fandisk/gen3.glb", "fertility/gen0.glb", "fertility/gen1.glb", "fertility/gen2.glb", "fertility/gen3.glb", "hinge/gen0.glb", "hinge/gen1.glb", "hinge/gen2.glb", "hinge/gen3.glb", "impeller/gen0.glb", "impeller/gen1.glb", "impeller/gen2.glb", "impeller/gen3.glb", "indorelax/gen0.glb", "indorelax/gen1.glb", "indorelax/gen2.glb", "indorelax/gen3.glb", "joint/gen0.glb", "joint/gen1.glb", "joint/gen2.glb", "joint/gen3.glb", "knob/gen0.glb", "knob/gen1.glb", "knob/gen2.glb", "knob/gen3.glb", "lucy/gen0.glb", "lucy/gen1.glb", "lucy/gen2.glb", "lucy/gen3.glb", "mannequin-devil/gen0.glb", "mannequin-devil/gen1.glb", "mannequin-devil/gen2.glb", "mannequin-devil/gen3.glb", "mech10/gen0.glb", "mech10/gen1.glb", "mech10/gen2.glb", "mech10/gen3.glb", "mechanical04/gen0.glb", "mechanical04/gen1.glb", "mechanical04/gen2.glb", "mechanical04/gen3.glb", "mechanical06/gen0.glb", "mechanical06/gen1.glb", "mechanical06/gen2.glb", "mechanical06/gen3.glb", "rabbit5k/gen0.glb", "rabbit5k/gen1.glb", "rabbit5k/gen2.glb", "rabbit5k/gen3.glb"];
+        const itemsPerPage = 16;
+        let currentPage = 0;
+
+        const SEEDS_PER_GROUP = 4;
+
+        function render() {
+            const container = document.getElementById('gallery');
+            container.innerHTML = '';
+            const start = currentPage * itemsPerPage;
+            const pageItems = allModels.slice(start, start + itemsPerPage);
+
+            const viewers = [];
+            pageItems.forEach(path => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `
+                    <model-viewer src="${path}" camera-controls interaction-prompt="none" shadow-intensity="1"></model-viewer>
+                    <div class="label">${path}</div>
+                `;
+                container.appendChild(div);
+                viewers.push(div.querySelector('model-viewer'));
+            });
+
+            // Group every SEEDS_PER_GROUP consecutive viewers and sync their cameras.
+            for (let i = 0; i < viewers.length; i += SEEDS_PER_GROUP) {
+                syncGroup(viewers.slice(i, i + SEEDS_PER_GROUP));
+            }
+
+            document.getElementById('pageInfo').innerText = `Page ${currentPage + 1} of ${Math.ceil(allModels.length / itemsPerPage)}`;
+            document.getElementById('prevBtn').disabled = currentPage === 0;
+            document.getElementById('nextBtn').disabled = start + itemsPerPage >= allModels.length;
+        }
+
+        function syncGroup(group) {
+            let syncing = false;
+            group.forEach(viewer => {
+                viewer.addEventListener('camera-change', (e) => {
+                    if (syncing) return;
+                    if (e.detail.source !== 'user-interaction') return;
+                    const orbit = viewer.getCameraOrbit();
+                    const target = viewer.getCameraTarget();
+                    const fov = viewer.getFieldOfView();
+                    syncing = true;
+                    group.forEach(other => {
+                        if (other === viewer) return;
+                        other.cameraOrbit = `${orbit.theta}rad ${orbit.phi}rad ${orbit.radius}m`;
+                        other.cameraTarget = `${target.x}m ${target.y}m ${target.z}m`;
+                        other.fieldOfView = `${fov}deg`;
+                    });
+                    syncing = false;
+                });
+            });
+        }
+
+        function changePage(step) { currentPage += step; render(); window.scrollTo(0,0); }
+        render();
+    </script>
+</body>
+</html>

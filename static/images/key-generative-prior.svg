@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">Generative topology prior</title>
+  <desc id="desc">Human-designed quad layouts are encoded into a learned topology prior, from which multiple clean loop layout candidates are generated.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f7c90"/>
+    </marker>
+    <style>
+      .label { font-family: Arial, Helvetica, sans-serif; font-size: 25px; font-weight: 700; fill: #18202a; }
+      .sub { font-family: Arial, Helvetica, sans-serif; font-size: 18px; fill: #5f6c7b; }
+      .small { font-family: Arial, Helvetica, sans-serif; font-size: 17px; fill: #354252; }
+      .panel { fill: #ffffff; stroke: #dfe5eb; stroke-width: 3; rx: 14; }
+      .mesh { fill: none; stroke: #0f7c90; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .mesh-light { fill: none; stroke: #83c5be; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+      .sample { fill: none; stroke: #25313e; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+      .cdf-a { fill: #f25f5c; opacity: 0.92; }
+      .cdf-b { fill: #ffd166; opacity: 0.9; }
+      .cdf-c { fill: #06d6a0; opacity: 0.86; }
+      .cdf-d { fill: #118ab2; opacity: 0.82; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="420" fill="#fbfcfd"/>
+
+  <text x="185" y="48" text-anchor="middle" class="label">Human layout corpus</text>
+  <text x="185" y="75" text-anchor="middle" class="sub">artist-style simple loops</text>
+
+  <g transform="translate(36 105)">
+    <rect class="panel" width="118" height="118"/>
+    <path class="mesh" d="M20 25 L98 25 L98 95 L20 95 Z M20 58 L98 58 M58 25 L58 95 M20 25 L58 58 L98 25 M20 95 L58 58 L98 95"/>
+  </g>
+  <g transform="translate(126 156)">
+    <rect class="panel" width="118" height="118"/>
+    <path class="mesh" d="M18 28 C40 12 80 12 100 30 L100 92 C74 106 42 106 18 90 Z M18 58 C46 47 72 47 100 58 M58 18 L58 104 M30 30 C48 50 48 72 30 90 M88 30 C70 50 70 72 88 90"/>
+  </g>
+  <g transform="translate(216 105)">
+    <rect class="panel" width="118" height="118"/>
+    <path class="mesh" d="M20 48 L48 20 L98 32 L98 88 L48 100 L20 72 Z M48 20 L48 100 M20 48 L98 48 M20 72 L98 72 M48 48 L72 32 M48 72 L72 88"/>
+  </g>
+
+  <path d="M370 190 C420 190 432 190 472 190" fill="none" stroke="#0f7c90" stroke-width="5" marker-end="url(#arrow)"/>
+
+  <text x="600" y="48" text-anchor="middle" class="label">Learned topology prior</text>
+  <text x="600" y="75" text-anchor="middle" class="sub">p(layout | shape)</text>
+  <g transform="translate(476 104)">
+    <rect class="panel" width="248" height="178"/>
+    <ellipse cx="124" cy="88" rx="92" ry="58" fill="none" stroke="#b8d7df" stroke-width="5"/>
+    <ellipse cx="124" cy="88" rx="62" ry="38" fill="none" stroke="#83c5be" stroke-width="4"/>
+    <ellipse cx="124" cy="88" rx="34" ry="20" fill="none" stroke="#0f7c90" stroke-width="4"/>
+    <circle cx="78" cy="76" r="8" fill="#0f7c90"/>
+    <circle cx="118" cy="108" r="8" fill="#0f7c90"/>
+    <circle cx="154" cy="68" r="8" fill="#0f7c90"/>
+    <circle cx="174" cy="118" r="8" fill="#0f7c90"/>
+    <path d="M78 76 C102 42 142 42 154 68" fill="none" stroke="#25313e" stroke-width="3"/>
+    <path d="M118 108 C138 138 164 138 174 118" fill="none" stroke="#25313e" stroke-width="3"/>
+  </g>
+
+  <path d="M744 190 C790 190 806 190 846 190" fill="none" stroke="#0f7c90" stroke-width="5" marker-end="url(#arrow)"/>
+
+  <text x="1010" y="48" text-anchor="middle" class="label">Generated candidates</text>
+  <text x="1010" y="75" text-anchor="middle" class="sub">sample clean loop structures</text>
+
+  <g transform="translate(870 104)">
+    <rect class="panel" width="100" height="100"/>
+    <path class="cdf-d" d="M16 24 L84 20 L88 80 L20 84 Z"/>
+    <path class="cdf-c" d="M28 34 L72 32 L74 68 L30 70 Z"/>
+    <path class="cdf-b" d="M40 44 L62 43 L63 58 L42 60 Z"/>
+    <path class="cdf-a" d="M48 49 L56 49 L57 55 L49 56 Z"/>
+    <path class="sample" d="M16 24 L84 20 L88 80 L20 84 Z M30 22 L30 82 M58 21 L58 82 M17 52 L86 50"/>
+  </g>
+  <g transform="translate(990 104)">
+    <rect class="panel" width="100" height="100"/>
+    <path class="cdf-d" d="M18 34 C36 14 70 14 86 36 L76 84 L25 82 Z"/>
+    <path class="cdf-c" d="M32 40 C45 28 64 28 72 42 L66 68 L36 68 Z"/>
+    <path class="cdf-b" d="M43 46 C50 40 60 40 63 48 L59 59 L46 59 Z"/>
+    <path class="sample" d="M18 34 C36 14 70 14 86 36 L76 84 L25 82 Z M34 28 L35 80 M58 24 L58 82 M25 55 L82 56"/>
+  </g>
+  <g transform="translate(930 224)">
+    <rect class="panel" width="100" height="100"/>
+    <path class="cdf-d" d="M20 46 L48 18 L82 30 L82 78 L48 94 L20 68 Z"/>
+    <path class="cdf-c" d="M34 48 L50 32 L68 38 L70 68 L50 80 L34 64 Z"/>
+    <path class="cdf-b" d="M43 50 L52 42 L61 46 L62 60 L52 66 L43 59 Z"/>
+    <path class="sample" d="M20 46 L48 18 L82 30 L82 78 L48 94 L20 68 Z M48 18 L48 94 M20 46 L82 46 M20 68 L82 68 M48 46 L66 30 M48 68 L66 78"/>
+  </g>
+
+  <text x="600" y="372" text-anchor="middle" class="small">learns where simple charts, separatrices, and editable loops tend to appear</text>
+</svg>

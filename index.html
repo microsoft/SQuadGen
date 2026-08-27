@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="SQuadGen generates simple, artist-friendly quad layouts on 3D shapes via Chart Distance Fields and geometry-conditioned latent diffusion.">
+  <meta name="keywords" content="SQuadGen, quad mesh, quad layout, remeshing, retopology, Chart Distance Fields, CDF, diffusion model">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQuadGen: Generating Simple Quad Layouts via Chart Distance Fields</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="./static/images/favicon.png">
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css?v=20260611-cdf2">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)'], ['$', '$']],
+        displayMath: [['\\[', '\\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<nav class="navbar project-navbar" role="navigation" aria-label="main navigation">
+  <div class="container is-max-widescreen">
+    <div class="navbar-brand">
+      <a class="navbar-item project-mark" href="#top" aria-label="SQuadGen home">SQuadGen</a>
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="project-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div id="project-menu" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#abstract">Abstract</a>
+        <a class="navbar-item" href="#ideas">Key Ideas</a>
+        <a class="navbar-item" href="#cdf">CDF</a>
+        <a class="navbar-item" href="#method">Method</a>
+        <a class="navbar-item" href="#results">Results</a>
+        <a class="navbar-item" href="#bibtex">BibTeX</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <section class="hero publication-hero">
+    <div class="hero-body">
+      <div class="container is-max-widescreen">
+        <div class="hero-intro has-text-centered">
+          <p class="venue-pill">SIGGRAPH / ACM TOG 2026</p>
+          <h1 class="title publication-title"><span class="title-brand">SQuadGen</span>: Generating Simple Quad Layouts via Chart Distance Fields</h1>
+          <p class="hero-summary">
+            A diffusion-based framework that turns discrete quad layout generation into continuous field synthesis, producing clean, loop-friendly quad layouts for editing and modeling.
+          </p>
+
+          <div class="publication-authors is-size-6">
+            <span class="author-block"><a href="https://Youkang-Kong.github.io/">Youkang Kong</a><sup>1,2</sup>,</span>
+            <span class="author-block"><a href="https://xueyuhanlang.github.io/">Yang Liu</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="https://yuedong.shading.me/">Yue Dong</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="https://scholar.google.com/citations?user=P91a-UQAAAAJ">Xin Tong</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="https://scholar.google.com/citations?user=9akH-n8AAAAJ&amp;hl=en">Heung-Yeung Shum</a><sup>2</sup></span>
+          </div>
+
+          <div class="publication-affiliations is-size-6">
+            <span><sup>1</sup>Tsinghua University</span>
+            <span><sup>2</sup>Microsoft Research Asia</span>
+          </div>
+
+          <div class="publication-links">
+            <a href="https://arxiv.org/abs/2604.27329" class="external-link button is-normal is-dark">
+              <span class="icon"><i class="ai ai-arxiv"></i></span>
+              <span>arXiv</span>
+            </a>
+            <a href="https://Youkang-Kong.github.io/squadgen/" class="external-link button is-normal is-dark">
+              <span class="icon"><i class="fab fa-github"></i></span>
+              <span>Code (coming soon)</span>
+            </a>
+            <a href="https://Youkang-Kong.github.io/squadgen/" class="external-link button is-normal is-dark">
+              <span class="icon"><i class="fas fa-database"></i></span>
+              <span>Data (coming soon)</span>
+            </a>
+            <a href="./poster/poster-56x23in-liu.pdf" class="external-link button is-normal is-dark">
+              <span class="icon"><i class="fas fa-file-pdf"></i></span>
+              <span>Poster (PDF)</span>
+            </a>
+            <a href="./poster/poster-56x23in-liu.pptx" download class="external-link button is-normal is-dark">
+              <span class="icon"><i class="fas fa-file-powerpoint"></i></span>
+              <span>Poster (PPTX)</span>
+            </a>
+            <a href="./slides/SQuadGen.pptx" download class="external-link button is-normal is-dark">
+              <span class="icon"><i class="fas fa-file-powerpoint"></i></span>
+              <span>Slides (PPTX)</span>
+            </a>
+            <a href="./slides/SQuadGen.pdf" class="external-link button is-normal is-dark">
+              <span class="icon"><i class="fas fa-file-pdf"></i></span>
+              <span>Slides (PDF)</span>
+            </a>
+            <a href="./fastforward_video/ffvideo_v6_voice.mp4" class="external-link button is-normal is-dark">
+              <span class="icon"><i class="fas fa-video"></i></span>
+              <span>Fast-forward Video</span>
+            </a>
+          </div>
+        </div>
+
+        <figure class="teaser-frame hero-teaser-frame">
+          <img src="./static/images/teaserfinal.png" alt="SQuadGen chart distance field visualizations and extracted quad layouts">
+          <figcaption>
+            <span class="brand-highlight">SQuadGen</span> synthesizes CDF patterns on input surfaces and extracts simple quad layouts with large, editable chart structure.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="metrics-band" aria-label="Project highlights">
+    <div class="container is-max-widescreen">
+      <div class="metric-grid">
+        <div class="metric-item">
+          <span class="metric-value">Representation</span>
+          <span class="metric-label">easy-to-learn continuous chart distance fields for quad layouts</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-value">Editability Metric</span>
+          <span class="metric-label">beyond vague artist-like claims</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-value">Large Dataset</span>
+          <span class="metric-label">230k diverse simple quad layouts dataset</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-value">10x Fewer Charts</span>
+          <span class="metric-label">simpler layouts than competing methods</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="abstract">
+    <div class="container is-max-desktop">
+      <div class="section-heading has-text-centered">
+        <p class="eyebrow">Abstract</p>
+        <h2 class="title is-3">Simple quad layouts for editable 3D assets</h2>
+      </div>
+      <div class="content publication-body has-text-justified">
+        <p>
+          3D shapes from scanning, reconstruction, or AI-generated content often lack simple quad mesh layouts—critical for efficient editing and modeling. Existing quad-remeshing techniques typically produce complex layouts with irregular loops, leading to tedious manual cleanup and extensive algorithm tuning.
+        </p>
+        <p>
+          We introduce <span class="brand-highlight">SQuadGen</span>, a diffusion-based generative framework that leverages Chart Distance Fields (CDF) to synthesize simple quad layouts on 3D shapes. Our approach addresses two key challenges: (1) the discrete nature of mesh connectivity, which hinders learning, and (2) the scarcity of large-scale datasets with simple quad meshes.
+        </p>
+        <p>
+          To overcome the first, we propose CDF, a continuous surface-based representation enabling effective learning and synthesis of quad layouts. To address the second, we define loop-aware simplicity metrics and construct a large-scale dataset of high-quality quad layouts recovered from public 3D repositories through a robust quad-recovery pipeline.
+        </p>
+        <p>
+          Extensive evaluations across diverse 3D inputs show that <span class="brand-highlight">SQuadGen</span> consistently outperforms existing methods, producing robust, artist-friendly simple quad layouts.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="why-loop-simplicity">
+    <div class="container is-max-widescreen">
+      <div class="columns is-variable is-6 is-vcentered">
+        <div class="column is-4-desktop">
+          <p class="eyebrow">Why Loop Simplicity Matters</p>
+          <h2 class="title is-3">Simple loops make quad meshes editable</h2>
+          <div class="content publication-body">
+            <p>
+              Quad layouts become useful when their loops support direct modeling operations. Artists routinely select edge-loops, face-loops, and edge-rings to extrude, deform, sharpen, or refine a region.
+            </p>
+            <p>
+              <span class="brand-highlight">SQuadGen</span> targets simple layouts whose loops are easy to follow and edit, so generated assets can move more naturally into standard modeling workflows.
+            </p>
+          </div>
+        </div>
+        <div class="column is-8-desktop">
+          <figure class="why-loop-figure">
+            <img src="./static/images/why-loop-edit.png?v=20260804-162246" alt="Selecting a loop on a simple quad layout and editing it with extrusion">
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="metric-motivation">
+    <div class="container is-max-widescreen">
+      <div class="section-heading has-text-centered compact-heading">
+        <p class="eyebrow">Measuring Editability</p>
+        <h2 class="title is-3">From vague artist-like quality to a clear metric</h2>
+      </div>
+
+      <div class="metric-motivation-grid">
+        <article class="metric-motivation-card">
+          <h3>Editable means loop-editable</h3>
+          <p>
+            In modeling workflows, editability is directly tied to whether face-loops and edge-loops can be selected, followed, and modified without spiraling or self-intersection.
+          </p>
+        </article>
+        <article class="metric-motivation-card metric-motivation-card-strong">
+          <h3>A clear loop simplicity metric</h3>
+          <p>
+            We define <strong>loop simplicity</strong> to measure the area controlled by simple loops, turning editable layout quality into a concrete score instead of a subjective visual impression.
+          </p>
+        </article>
+        <article class="metric-motivation-card">
+          <h3>Beyond vague artist-like claims</h3>
+          <p>
+            Methods described as artist-like often rely on ambiguous visual criteria. Loop simplicity provides a direct, reproducible way to compare whether a generated layout is actually suitable for editing.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="ideas">
+    <div class="container is-max-widescreen">
+      <div class="section-heading has-text-centered">
+        <p class="eyebrow">Key Ideas</p>
+        <h2 class="title is-3">What makes SQuadGen different</h2>
+      </div>
+
+      <div class="columns is-variable is-5 is-multiline idea-columns">
+        <div class="column is-half-desktop">
+          <article class="idea-card">
+            <figure class="idea-figure">
+              <img src="./static/images/key-cdf.png" alt="Chart splitting and CDF/DCDF construction">
+            </figure>
+            <div class="idea-icon"><i class="fas fa-wave-square"></i></div>
+            <h3>Chart Distance Fields</h3>
+            <p>
+              CDF and DCDF encode chart centers, boundaries, and flow directions as continuous scalar fields on the surface, bypassing direct prediction of discrete quad connectivity.
+            </p>
+          </article>
+        </div>
+        <div class="column is-half-desktop">
+          <article class="idea-card">
+            <figure class="idea-figure">
+              <img src="./static/images/key-loop-simplicity.png" alt="Comparison of simple and spiral loops with loop simplicity scores">
+            </figure>
+            <div class="idea-icon"><i class="fas fa-chart-line"></i></div>
+            <h3>Loop Simplicity Metrics</h3>
+            <p>
+              Loop-aware scores evaluate whether face-loops and edge-loops stay simple, making layout quality measurable in terms of editability rather than geometry error alone.
+            </p>
+          </article>
+        </div>
+        <div class="column is-half-desktop">
+          <article class="idea-card">
+            <figure class="idea-figure">
+              <img src="./static/images/key-generative-prior.svg" alt="Concept diagram of a learned generative topology prior">
+            </figure>
+            <div class="idea-icon"><i class="fas fa-magic"></i></div>
+            <h3>Generative Topology Prior</h3>
+            <p>
+              The model learns topology patterns from artist-authored and recovered quad layouts, capturing human priors for where clean loops and charts should appear.
+            </p>
+          </article>
+        </div>
+        <div class="column is-half-desktop">
+          <article class="idea-card">
+            <figure class="idea-figure">
+              <img src="./static/images/key-dataset.png" alt="Dataset statistics and curated quad mesh examples">
+            </figure>
+            <div class="idea-icon"><i class="fas fa-filter"></i></div>
+            <h3>Loop-Aware Data Curation</h3>
+            <p>
+              A recovery pipeline and simplicity metrics curate 230k high-quality quad layouts, filtering for editability instead of only geometric reconstruction accuracy.
+            </p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="cdf">
+    <div class="container is-max-widescreen">
+      <div class="section-heading has-text-centered">
+        <p class="eyebrow">Chart Distance Field</p>
+        <h2 class="title is-3">An easy-to-learn continuous field representation for quad topology</h2>
+      </div>
+
+      <figure class="cdf-figure cdf-definition-figure">
+        <img src="./static/images/cdf_defination.png" alt="Definition of Chart Distance Field and Dual Chart Distance Field from a quad layout chart">
+        <figcaption>
+          Definition of CDF and DCDF from local coordinates on a quad layout chart.
+        </figcaption>
+      </figure>
+
+      <div class="cdf-main-copy">
+        <p>
+          CDF preserves chart centers, boundaries, and flow structure as an <strong>easy-to-learn continuous field</strong>, turning discrete topology generation into a <strong>learnable field synthesis problem</strong>.
+        </p>
+      </div>
+
+      <div class="cdf-compare-card">
+        <h3>Compared with frame fields</h3>
+        <p>
+          Frame-field pipelines usually predict local directions and rely on integer programming to reconstruct the final quad mesh, which can miss the original layout and produce locally plausible layouts with spiral loops. CDF directly represents layout structure, giving the model a global signal for simple, editable loops.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="method">
+    <div class="container is-max-widescreen">
+      <div class="section-heading has-text-centered">
+        <p class="eyebrow">Method</p>
+        <h2 class="title is-3">From shape geometry to a clean quad layout</h2>
+      </div>
+
+      <figure class="method-figure">
+        <img src="./static/images/method-fig8.png" alt="Design of SQuadGen with Geom-AE, SQ-VAE, SQ-Diffuse, and layout extractor">
+        <figcaption>
+          Design of <span class="brand-highlight">SQuadGen</span>: Geom-AE encodes shape geometry, SQ-VAE learns a latent space for quad layouts, SQ-Diffuse denoises layout latents conditioned on geometry, and the synthesized CDF is converted to a quad layout via the layout extractor.
+        </figcaption>
+      </figure>
+
+      <div class="method-flow" aria-label="SQuadGen pipeline">
+        <div class="flow-step">
+          <span class="flow-number">1</span>
+          <h3>Input Mesh</h3>
+          <p>Sample surface points and normals from a triangle mesh, including open or scanned geometry.</p>
+        </div>
+        <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+        <div class="flow-step">
+          <span class="flow-number">2</span>
+          <h3>Geometry Latent</h3>
+          <p>Geom-AE encodes surface geometry into VecSet latent tokens with global attention.</p>
+        </div>
+        <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+        <div class="flow-step">
+          <span class="flow-number">3</span>
+          <h3>SQ-Diffuse</h3>
+          <p>A geometry-conditioned latent diffusion model generates layout latents for CDF and DCDF fields.</p>
+        </div>
+        <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+        <div class="flow-step">
+          <span class="flow-number">4</span>
+          <h3>Layout Extraction</h3>
+          <p>Region growing, chart boundary tracing, and refinement convert fields into editable quad meshes.</p>
+        </div>
+      </div>
+
+      <div class="content method-note">
+        <p>
+          The central design choice is to generate layout-aware scalar fields instead of predicting mesh topology directly. This keeps the learning target continuous while preserving the global regularity needed for face-loops, edge-loops, and edge-rings.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="loop-metrics">
+    <div class="container is-max-widescreen">
+      <div class="columns is-variable is-6 is-vcentered metric-definition-row">
+        <div class="column is-5-desktop">
+          <p class="eyebrow">Loop Simplicity Metrics</p>
+          <h2 class="title is-3">Quantifying loop simplicity</h2>
+          <div class="content publication-body">
+            <p>
+              We define a loop as <strong>simple</strong> when it avoids self-intersection and spiraling.
+            </p>
+            <p>
+              Loop simplicity measures the <strong>area ratio of regions controlled by simple loops</strong>. A score of <strong>1</strong> means all face-loops and edge-loops are simple; lower scores indicate that complex or spiraling loops occupy more of the mesh.
+            </p>
+          </div>
+        </div>
+        <div class="column is-7-desktop">
+          <div class="formula-panel" aria-label="Loop simplicity formulas">
+            <div class="formula-row">
+              <p class="formula-title">Face-loop simplicity</p>
+              <div class="formula-expression latex-formula">
+                \[
+                  S_{fl}(\mathcal{Q}) :=
+                  \frac{\sum_{\mathbf{f} \in \mathcal{F}_s} \operatorname{area}(\mathbf{f})}
+                       {\sum_{\mathbf{f} \in \mathcal{F}_{all}} \operatorname{area}(\mathbf{f})}
+                \]
+              </div>
+            </div>
+
+            <div class="formula-row">
+              <p class="formula-title">Edge-loop simplicity</p>
+              <div class="formula-expression latex-formula">
+                \[
+                  S_{el}(\mathcal{Q}) :=
+                  \frac{\sum_{\mathbf{e} \in \mathcal{E}_s} \operatorname{area}_f(\mathbf{e})}
+                       {\sum_{\mathbf{e} \in \mathcal{E}_{all}} \operatorname{area}_f(\mathbf{e})}
+                \]
+              </div>
+            </div>
+
+            <div class="formula-row formula-row-final">
+              <p class="formula-title">Overall loop simplicity</p>
+              <div class="formula-expression latex-formula">
+                \[
+                  S_l(\mathcal{Q}) = \min\bigl(S_{fl}(\mathcal{Q}), S_{el}(\mathcal{Q})\bigr)
+                \]
+              </div>
+            </div>
+
+            <p class="formula-note">
+              <span class="math-inline">F<sub>s</sub></span> and <span class="math-inline">E<sub>s</sub></span> are the subsets of simple face-loops and edge-loops; <span class="math-inline">F<sub>all</sub></span> and <span class="math-inline">E<sub>all</sub></span> are all loops. The score is therefore an area-weighted ratio of simple loops to all loops.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="dataset">
+    <div class="container is-max-widescreen">
+      <div class="section-heading has-text-centered compact-heading">
+        <p class="eyebrow">Dataset</p>
+        <h2 class="title is-3">A large-scale source of editable layout priors</h2>
+      </div>
+
+      <div class="content publication-body dataset-copy">
+        <p>
+          We recover original quad topology from public 3D repositories such as Objaverse and combine it with outputs from existing remeshing tools.
+        </p>
+        <p>
+          Loop simplicity filters these candidates into a <strong>large-scale, diverse 230k-shape simple quad layout dataset</strong>, giving <span class="brand-highlight">SQuadGen</span> a generative topology prior over coherent, editable quad layouts.
+        </p>
+      </div>
+
+      <figure class="detail-figure dataset-figure">
+        <img src="./static/images/key-dataset-all.png" alt="Statistics of the proposed large-scale diverse simple quad layout dataset">
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="results">
+    <div class="container is-max-widescreen">
+      <div class="section-heading has-text-centered">
+        <p class="eyebrow">Results</p>
+        <h2 class="title is-3">Visual comparisons across diverse inputs</h2>
+      </div>
+
+      <figure class="result-figure result-figure-large">
+        <img src="./static/images/results-visnew.png" alt="Visual comparison of SQuadGen with QuadWild, QuadriFlow, QuadRemesher, and FSCP on Part1k, ABC1k, and Model300 examples">
+      </figure>
+
+      <div class="result-explanation">
+        <div class="result-legend" aria-label="Colored metric legend">
+          <div class="legend-item">
+            <span class="legend-swatch legend-blue"></span>
+            <span><strong>Blue</strong>: loop simplicity \(S_l\), higher is better.</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch legend-orange"></span>
+            <span><strong>Orange</strong>: chart count \(N_c\), lower means fewer charts.</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch legend-purple"></span>
+            <span><strong>Pink</strong>: irregular vertices \(N_I\).</span>
+          </div>
+        </div>
+
+        <div class="content publication-body result-comments">
+          <p>
+            The comparison spans Part1k, ABC1k, and Model300 examples. From left to right, each row shows the input triangle mesh, outputs from <em>QuadWild</em>, <em>QuadriFlow</em>, <em>QuadRemesher</em>, <em>FSCP</em>, and the <span class="brand-highlight">SQuadGen</span> result with its synthesized CDF.
+          </p>
+          <p>
+            Across Part1k, ABC1k, and Model300, <span class="brand-highlight">SQuadGen</span> yields simpler loop structures and lower chart complexity while preserving major sharp features.
+          </p>
+        </div>
+
+        <div class="result-actions">
+          <a href="./static/files/sup2.pdf" class="button is-normal more-results-button" target="_blank" rel="noopener">
+            <span class="icon"><i class="fas fa-images"></i></span>
+            <span>More Results</span>
+          </a>
+        </div>
+
+        <div class="learning-case-study">
+          <div class="case-study-copy">
+            <p class="eyebrow">Case Study</p>
+            <h3>Learning-based retopology still struggles on simple shapes</h3>
+            <p>
+              We compare <span class="brand-highlight">SQuadGen</span> with <em>HunYuan3D Retopology</em>, <em>Tripo3D Retopology</em>, and <em>NeurCross</em> on two simple examples. Even here, competing learning-based systems can introduce triangles, spiral loops, excessive chart counts, or feature misalignment, while <span class="brand-highlight">SQuadGen</span> keeps a compact and editable quad layout.
+            </p>
+          </div>
+          <figure class="case-study-figure">
+            <img src="./static/images/case-learning-methods.png" alt="Case study comparing SQuadGen with HunYuan3D Retopology, Tripo3D Retopology, and NeurCross">
+          </figure>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section" id="interactive-cdf">
+    <div class="container is-max-desktop">
+      <div class="section-heading has-text-centered compact-heading">
+        <p class="eyebrow">Interactive CDF Explorer</p>
+        <h2 class="title is-3">Browse uncurated synthesized CDFs</h2>
+      </div>
+
+      <div class="content publication-body explorer-copy has-text-centered">
+        <p>
+          We provide an interactive gallery of synthesized Chart Distance Fields for 28 Model300 shapes, including failure cases. For each shape, four CDFs are generated with different random seeds and rendered as color-textured GLB models. Drag any viewer to rotate &mdash; the four seeds in the same row stay in sync.
+        </p>
+      </div>
+    </div>
+
+    <div class="cdf-wide">
+      <div id="cdfGallery" class="cdf-gallery"></div>
+      <div class="cdf-nav">
+        <button id="cdfPrevBtn" type="button" class="button">&larr; Backward</button>
+        <span id="cdfPageInfo" class="cdf-page-info"></span>
+        <button id="cdfNextBtn" type="button" class="button">Forward &rarr;</button>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const cdfModelDirs = ["18","5","angel","anti_backlash_nut","armadillo","bunny","cad5-tri","camel-tri","cap_thing","chair","chinese_lion100K","cover_small","coverrear_Lp","deformed_armadillo","elephant","fandisk","fertility","hinge","impeller","indorelax","joint","knob","lucy","mannequin-devil","mech10","mechanical04","mechanical06","rabbit5k"];
+        const SEEDS_PER_MODEL = 4;
+        const MODELS_PER_PAGE = 4;
+        const cdfAllModels = [];
+        cdfModelDirs.forEach(function (dir) {
+          for (let i = 0; i < SEEDS_PER_MODEL; i++) {
+            cdfAllModels.push("./interactive_page/" + dir + "/gen" + i + ".glb");
+          }
+        });
+        const itemsPerPage = MODELS_PER_PAGE * SEEDS_PER_MODEL;
+        const totalPages = Math.ceil(cdfAllModels.length / itemsPerPage);
+        let currentPage = 0;
+
+        function syncGroup(group) {
+          let syncing = false;
+          group.forEach(function (viewer) {
+            viewer.addEventListener('camera-change', function (e) {
+              if (syncing) return;
+              if (!e.detail || e.detail.source !== 'user-interaction') return;
+              const orbit = viewer.getCameraOrbit();
+              const target = viewer.getCameraTarget();
+              const fov = viewer.getFieldOfView();
+              syncing = true;
+              group.forEach(function (other) {
+                if (other === viewer) return;
+                other.cameraOrbit = orbit.theta + 'rad ' + orbit.phi + 'rad ' + orbit.radius + 'm';
+                other.cameraTarget = target.x + 'm ' + target.y + 'm ' + target.z + 'm';
+                other.fieldOfView = fov + 'deg';
+              });
+              syncing = false;
+            });
+          });
+        }
+
+        function renderCdf() {
+          const container = document.getElementById('cdfGallery');
+          container.innerHTML = '';
+          const start = currentPage * itemsPerPage;
+          const pageItems = cdfAllModels.slice(start, start + itemsPerPage);
+          const viewers = [];
+          pageItems.forEach(function (path) {
+            const card = document.createElement('div');
+            card.className = 'cdf-card';
+            const label = path.replace('./interactive_page/', '');
+            card.innerHTML =
+              '<model-viewer src="' + path + '" camera-controls interaction-prompt="none" shadow-intensity="1"></model-viewer>' +
+              '<div class="cdf-label">' + label + '</div>';
+            container.appendChild(card);
+            viewers.push(card.querySelector('model-viewer'));
+          });
+          for (let i = 0; i < viewers.length; i += SEEDS_PER_MODEL) {
+            syncGroup(viewers.slice(i, i + SEEDS_PER_MODEL));
+          }
+          document.getElementById('cdfPageInfo').innerText = 'Page ' + (currentPage + 1) + ' of ' + totalPages;
+          document.getElementById('cdfPrevBtn').disabled = currentPage === 0;
+          document.getElementById('cdfNextBtn').disabled = currentPage >= totalPages - 1;
+        }
+
+        function changeCdfPage(step) {
+          const next = currentPage + step;
+          if (next < 0 || next >= totalPages) return;
+          currentPage = next;
+          renderCdf();
+          document.getElementById('interactive-cdf').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        document.getElementById('cdfPrevBtn').addEventListener('click', function () { changeCdfPage(-1); });
+        document.getElementById('cdfNextBtn').addEventListener('click', function () { changeCdfPage(1); });
+        renderCdf();
+      })();
+    </script>
+  </section>
+
+  <section class="section" id="bibtex">
+    <div class="container is-max-desktop content">
+      <div class="section-heading has-text-centered">
+        <p class="eyebrow">Citation</p>
+        <h2 class="title is-3">BibTeX</h2>
+      </div>
+      <pre><code>@article{kong2026squadgen,
+  title   = {SQuadGen: Generating Simple Quad Layouts via Chart Distance Fields},
+  author  = {Kong, Youkang and Liu, Yang and Dong, Yue and Tong, Xin and Shum, Heung-Yeung},
+  journal = {ACM Trans. Graph. (SIGGRAPH)},
+  volume  = {45},
+  number  = {4},
+  year    = {2026},
+}</code></pre>
+    </div>
+  </section>
+</main>
+
+<div class="image-lightbox" id="image-lightbox" aria-hidden="true" role="dialog" aria-label="Expanded figure preview">
+  <button class="image-lightbox-close" type="button" aria-label="Close preview">
+    <span class="icon"><i class="fas fa-times"></i></span>
+  </button>
+  <img src="" alt="">
+</div>
+
+<footer class="footer project-footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p>SQuadGen Project Page, 2026</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
