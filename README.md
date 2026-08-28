@@ -48,6 +48,15 @@ The model learns topology patterns from artist-authored and recovered quad layou
 
 A recovery pipeline and simplicity metrics curate 230k high-quality quad layouts, filtering for editability instead of only geometric reconstruction accuracy. The curation process and dataset scope are described in [data preparation](data_tools/README.md) and the [paper](https://arxiv.org/abs/2604.27329).
 
+## 🗺️ Roadmap
+
+- [x] Paper release
+- [x] Release pretrained checkpoints
+- [x] Release inference and training code
+- [x] Release training dataset
+- [ ] Release data preprocess code
+- [ ] Release quad extraction code
+
 ## 🛠️ Installation
 
 ### Prerequisites
