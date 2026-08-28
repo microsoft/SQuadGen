@@ -1,14 +1,14 @@
 # data_tools
 
 Python utilities for preparing SQuadGen training data. The scripts here are thin
-wrappers around the `CDFGen` executable from the [QuadTools](../QuadTools)
+wrappers around the `CDFGen` executable from [QuadTools](https://github.com/xueyuhanlang/QuadTools4SquadGen)
 submodule, plus helpers for building training file lists and visualizing CDF
 NPZ samples.
 
 ## Requirements
 
 Build the `CDFGen` executable from the QuadTools submodule (see
-[QuadTools/README.md](../QuadTools/README.md) or the Installation Steps in the
+[QuadTools/README.md](https://github.com/xueyuhanlang/QuadTools4SquadGen) or the Installation Steps in the
 project [README.md](../README.md)). After building, the executable should be
 available at `QuadTools/build/CDFGen`.
 
