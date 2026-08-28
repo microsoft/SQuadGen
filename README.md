@@ -5,6 +5,7 @@
 <p>
 <a href="https://youkang-kong.github.io/squadgen/"><img src="https://img.shields.io/badge/Project-Website-blue" alt="Project Page"></a>
 <a href="https://arxiv.org/abs/2604.27329"><img src="https://img.shields.io/badge/Paper-2604.27329-red" alt="Paper"></a>
+<a href="https://drive.google.com/file/d/1GthfgyHuYqhVeci7BJg-_6uc3QDH52IQ/view?usp=sharing"><img src="https://img.shields.io/badge/Dataset-Google%20Drive-4285F4?logo=googledrive&logoColor=white" alt="Dataset"></a>
 <a href="https://github.com/microsoft/SQuadGen"><img src="https://img.shields.io/badge/Github-181717?logo=github&logoColor=white" alt="github code"></a>
 <a href="https://huggingface.co/microsoft/SQuadGen"><img src="https://img.shields.io/badge/Hugging%20Face-Model-yellow" alt="Hugging Face"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
