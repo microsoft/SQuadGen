@@ -55,8 +55,8 @@ A recovery pipeline and simplicity metrics curate 230k high-quality quad layouts
 - [x] Release pretrained checkpoints
 - [x] Release inference and training code
 - [x] Release training dataset
-- [ ] Release data preprocess code
-- [ ] Release quad extraction code
+- [x] Release data preprocess code
+- [x] Release quad extraction code
 
 ## 🛠️ Installation
 
